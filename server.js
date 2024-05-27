@@ -242,14 +242,13 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 });
 
 
-// Rota para buscar dados
 app.get('/fetch-data', async (req, res) => {
     try {
-        const { url } = req.query; // Espera-se que a URL venha como query param
+        const { url } = req.query;
         const response = await axios.get(url, {
             headers: {
 						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-						"Accept-Encoding": "gzip, deflate, br", // zstd não é comumente suportado em navegadores padrão, remova-o se estiver causando problemas
+						"Accept-Encoding": "gzip, deflate, br",
 						"Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
 						"Connection": "keep-alive",
 						"Cookie": "PortalIOJoyRide=ridden; ASP.NET_SessionId=jfuh4fsc14vr1usugeiqimel; _gid=GA1.3.388108575.1714476614; _gat_gtag_UA_129106988_1=1; _ga_WFSES04T4S=GS1.1.1714524889.12.1.1714526450.25.0.0; _ga=GA1.1.906638006.1713916640",
@@ -268,8 +267,8 @@ app.get('/fetch-data', async (req, res) => {
 					credentials: 'include'
         });
 
-        // Enviar a resposta da API para o front-end
         res.send(response.data);
+
     } catch (error) {
         console.error('Erro ao fazer fetch:', error.message);
         res.status(500).send('Erro ao buscar dados');
