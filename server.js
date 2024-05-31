@@ -214,7 +214,7 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 						// Tarefa agendada para enviar o e-mail todos os dias às 8h
 						const mailOptions = {
 							from: 'ti@riuma.com.br',
-							to: 'Comercial@riuma.com.br',
+							to: 'comercial@riuma.com.br',
 							subject: 'Diário Oficial',
 							html: body
 						};
