@@ -105,7 +105,7 @@ const GetData = async (tags) => {
 
 
 //app.get('/email', async (req, res) => 
-sendEmail = cron.schedule('00 15 * * *', async (req, res) => 
+sendEmail = cron.schedule('10 15 * * *', async (req, res) => 
 { 
 	try{
 	const body = {
