@@ -61,16 +61,14 @@ const GetData = async (tags) => {
 	
 	let allResultsCombined = [];
 
-	for(let currentPage =1 ;currentPage <= 1; currentPage++){
 		for (const tag of tags) {
 			const url = buildCompleteUrl(
 				selectedStartDate,
 				selectedEndDate,
 				tag.text,
-				currentPage
+				1
 			);
 	
-			if (currentPage > 1) {
 				const response = await axios.get("http://77.37.69.49:3000/fetch-data", {
 					params: {
 						url: url
@@ -97,44 +95,19 @@ const GetData = async (tags) => {
 			allResultsCombined.push({
 				cards:cleanedCards
 			});
-			} else {
-				
-			const response = await fetch(url);
-			const html = await response.text();
-	
-			const $ = cheerio.load(html);
-			const cards = $('.resultadoBuscaItem');
-	
-			const cleanedCards = cards.map((index, card) => {
-				const linkElement = $(card).find('.card-text a');
-				let link = linkElement.attr('href') || '';
-				link = link.startsWith('http') ? link : `https://www.imprensaoficial.com.br${link}`;
-	
-	
-				return {
-					header: $(card).find('.card-header').html(),
-					body: $(card).find('.card-body').html(),
-					link: link
-				};
-	
-				
-			}).get();
-	
-			allResultsCombined.push({
-				cards: cleanedCards
-			});
-			}
 			
-			}
-		}
+	
+	}
 
 		return allResultsCombined
 };
 
 
 
-cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
-
+//app.get('/email', async (req, res) => 
+sendEmail = cron.schedule('00 15 * * *', async (req, res) => 
+{ 
+	try{
 	const body = {
 		"LOGIN": [
 			{
@@ -160,19 +133,9 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 
 		const resp = await axios(config);
         if (resp.status === 200) {
-                if (resp.status === 200)
+                if (resp.status === 200 && resp.data.CODIGO === '1')
                 {
-                    switch (resp.data.CODIGO)
-                    {
-                        case '0':
-                           console.log("erro acessar a conta!")
-                           return usuario = {
-
-						   }
-
-                        case '1':
-							console.log(resp.data)
-							//localStorage.setItem("PALAVRAS_CHAVE", JSON.stringify("RIUMA|PEDRA")); 
+            
 						const valoresSeparados = resp.data.PALAVRASCHAVE.split("|");
 						const valoresComVirgula = valoresSeparados.join(", ");
 						let tags =[]
@@ -182,13 +145,23 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 
 						let objects =  await GetData(tags)
 
-						const transporter = nodemailer.createTransport({
+						/*const transporter = nodemailer.createTransport({
 						host: 'smtp.gmail.com',
 						port: 	587, // Substitua pela porta adequada do seu provedor de e-mail
 						secure: false, // true para SSL/TLS, false para outras conexões
 						auth: {
 							user: 'ti@riuma.com.br',
 							pass: 'Mineracao10ti@RIUMA'
+						}
+						});*/
+
+						const transporter = nodemailer.createTransport({
+						host: 'smtp.office365.com',
+						port: 	587, // Substitua pela porta adequada do seu provedor de e-mail
+						secure: false, // true para SSL/TLS, false para outras conexões
+						auth: {
+							user: 'lisacs2002@hotmail.com',
+							pass: 'B@tatadoce13'
 						}
 						});
 
@@ -209,12 +182,16 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 								body += '</div></div> </br>';
 								
 							})
+
+							console.log("entrou")
 						}
+
+						console.log("saiu")
 
 						// Tarefa agendada para enviar o e-mail todos os dias às 8h
 						const mailOptions = {
-							from: 'ti@riuma.com.br',
-							to: 'comercial@riuma.com.br',
+							from: 'lisacs2002@hotmail.com',
+							to: 'elisacds2002@gmail.com',
 							subject: 'Diário Oficial',
 							html: body
 						};
@@ -226,19 +203,17 @@ cron.schedule('0 8 * * *', async () => { //rodar as 8h da manhã
 							console.log('E-mail enviado:', info.response);
 							}
 						});
-
-                        case '2':
-                            console.log("erro senha inválida!")
-                             
-
-                    }
                 }
                 else
                 {
                    console.log('Falha na validação da autorização da API.')
                 }
             }
-
+		}catch(error){
+			console.error('Erro ao processar requisição:', error.message);
+			return res.status(500).send('Erro interno ao processar requisição.');
+		}
+	return res.status(200).send('ok');
 });
 
 
